@@ -10,7 +10,10 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: "*"
+}));
+
 
 // Serve static files (uploads folder for images)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
