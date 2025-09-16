@@ -1,0 +1,21 @@
+const express = require('express');
+const router = express.Router();
+const remarkController = require('../controllers/remarkController');
+const { protect, admin } = require('../middleware/authMiddleware');
+
+// All routes are protected
+router.use(protect);
+
+// User routes
+router.post('/', remarkController.createRemark);
+router.get('/', remarkController.getAllRemarks);
+router.get('/status/:status', remarkController.getRemarksByStatus);
+router.get('/:date', remarkController.getRemarksByDate);
+router.put('/:id', remarkController.updateRemark);
+router.patch('/:id/toggle-done', remarkController.toggleRemarkDone);
+router.delete('/:id', remarkController.deleteRemark);
+
+// Admin-only routes
+router.get('/admin/all', remarkController.getAllRemarksForAdmin);
+
+module.exports = router;
