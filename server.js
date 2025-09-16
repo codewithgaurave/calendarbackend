@@ -6,17 +6,19 @@ const path = require("path");
 
 const app = express();
 
-// ✅ CORS Middleware
+// ✅ CORS Middleware (Safe version)
 const allowedOrigins = [
-  "https://evanta.netlify.app", // tumhara frontend
-  "http://localhost:3000"       // dev ke liye optional
+  "https://evanta.netlify.app",
+  "http://localhost:3000"
 ];
 
 app.use(cors({
-  origin: function (origin, callback) {
+  origin: (origin, callback) => {
+    // Postman / curl / SSR requests me origin null ho sakta hai
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log("❌ Blocked by CORS:", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
@@ -25,8 +27,13 @@ app.use(cors({
   credentials: true
 }));
 
-// ✅ Preflight request handle
-app.options("*", cors());
+// ✅ Always respond to preflight
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.sendStatus(200);
+});
 
 // Middleware
 app.use(express.json());
@@ -53,10 +60,10 @@ app.get("/", (req, res) => {
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error("❌ Error:", err.stack);
+  console.error("❌ Error:", err.message);
   res.status(500).json({
     success: false,
-    message: err.message || "Something went wrong!",
+    message: err.message || "Something went wrong!"
   });
 });
 
