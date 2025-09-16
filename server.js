@@ -6,15 +6,16 @@ const path = require("path");
 
 // App init
 const app = express();
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(cors({
   origin: "https://evanta.netlify.app",   // only your frontend domain
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 
 // Serve static files (uploads folder for images)
