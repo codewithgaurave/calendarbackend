@@ -4,33 +4,43 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
 
-// App init
 const app = express();
 
-// ✅ CORS Middleware (sabse upar rakho)
+// ✅ CORS Middleware
+const allowedOrigins = [
+  "https://evanta.netlify.app", // tumhara frontend
+  "http://localhost:3000"       // dev ke liye optional
+];
+
 app.use(cors({
-  origin: "https://evanta.netlify.app",   // sirf aapka frontend domain allow hoga
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
 }));
 
-// ✅ Preflight request handle karo (important for POST/PUT)
+// ✅ Preflight request handle
 app.options("*", cors());
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files (uploads folder for images)
+// Static files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Import Routes
+// Routes
 const userRoutes = require("./routes/userRoutes");
 const remarkRoutes = require("./routes/remarkRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const bannerRoutes = require("./routes/bannerRoutes");
 
-// Use Routes
 app.use("/api/users", userRoutes);
 app.use("/api/remarks", remarkRoutes);
 app.use("/api/admin", adminRoutes);
@@ -50,7 +60,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Connect to MongoDB
+// Connect DB and start server
 const connectDB = require("./config/db");
 
 connectDB()
@@ -62,5 +72,5 @@ connectDB()
   })
   .catch((err) => {
     console.error("❌ MongoDB connection failed:", err.message);
-    process.exit(1); // Stop server if DB connection fails
+    process.exit(1);
   });
