@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const remarkController = require('../controllers/remarkController');
-const { protect, admin } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
 
 // All routes are protected
 router.use(protect);

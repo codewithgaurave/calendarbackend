@@ -1,11 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
-const {
-  getBanners,
-  uploadBanner,
-  deleteBanner,
-} = require("../controllers/bannerController");
+const { getBanners, uploadBanner, deleteBanner } = require("../controllers/bannerController");
 
 const router = express.Router();
 
